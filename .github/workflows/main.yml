@@ -61,7 +61,7 @@ jobs:
                   echo "#KODIPROP:inputstream.adaptive.license_type=clearkey" >> playlist.m3u
                 fi
                 if [[ -n "$tvg_id" ]]; then
-                  worker_url="https://akashgo.hasanhabibmottakin.workers.dev/?id=${tvg_id}"
+                  worker_url="https://akashgo.hasanhabibmottakin.workers.dev/?id=${tvg_id}|User-Agent=https://t.me/codecrafter_codecphp"
                   echo "#KODIPROP:inputstream.adaptive.license_key=${worker_url}" >> playlist.m3u
                 fi
               fi
@@ -74,7 +74,7 @@ jobs:
                 --arg title "$group_title" \
                 --arg drmlicense "$worker_url" \
                 --arg link "$url" \
-                '{name: $name, logo: $logo, title: $title, drmlicense: $drmlicense, useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36", referer: "", link: $link}' >> items.json
+                '{name: $name, logo: $logo, title: $title, drmlicense: $drmlicense, useragent: "https://t.me/codecrafter_codecphp", referer: "", link: $link}' >> items.json
             fi
           done < raw.m3u
           
