@@ -1,8 +1,8 @@
 <h1 align="center">
   <br>
-  <a href="#"><img src="https://tstatic.akash-go.com/cms-ui/images/custom-content/1735560559088.png" alt="Akashgo Live TV" width="120"></a>
+  <a href="#"><img src="https://www.akashgo.com/b3f0fcac89fb9c893808c7ac2505a35d.png" alt="Akashgo Live TV" width="120"></a>
   <br>
-  🔥 Akashgo Live TV DRM Updater 🔥
+  🔥 Akashgo  🔥
   <br>
 </h1>
 
@@ -37,7 +37,7 @@ This repository provides a fully automated backend infrastructure to extract, pr
 * 👉 **[Auto Updated M3U Playlist](https://raw.githubusercontent.comhasanhabibmottakin/AkashGo/main/playlist.m3u)**
 * 👉 **[Auto Updated JSON API](https://raw.githubusercontent.comhasanhabibmottakin/AkashGo/main/playlist.json)**
 
-*(Note: Replace `YOUR_USERNAME` and `YOUR_REPO_NAME` with your actual GitHub profile and repository details).*
+*(Note: This project and its generated playlists are created strictly for educational and research purposes. If there are any issues or concerns regarding the content, usage, or distribution, please notify the developer immediately and the repository will be taken down.*
 
 ## 💻 Example Usage (Python)
 
