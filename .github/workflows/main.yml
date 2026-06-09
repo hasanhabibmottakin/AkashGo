@@ -41,41 +41,44 @@ jobs:
               group_title=$(echo "$line" | grep -oP 'group-title="\K[^"]+' || true)
               extinf_line="$line"
               props=()
-              key=""
+              key="" 
             elif [[ "$line" == \#KODIPROP* ]]; then
-              props+=("$line")
-              if [[ "$line" == *license_key=* ]]; then
-                key="${line#*=}"
+              # M3U file e jodi kono license_key thakeo, seta ignore korbe ar baki props gulo nibe
+              if [[ "$line" != *license_key=* ]]; then
+                props+=("$line")
               fi
             elif [[ "$line" != \#* ]]; then
               url="$line"
               
-              if [[ "$url" == *.mpd && -z "$key" && -n "$tvg_id" ]]; then
-                sleep $((RANDOM % 31 + 30))
+              
+              if [[ "$url" == *.mpd && -n "$tvg_id" ]]; then
+                echo "Fetching fresh key from API for Channel ID: $tvg_id"
+                sleep $((RANDOM % 31 + 30)) # 30 theke 60 second random wait korbe api request er majhe
                 key_resp=$(curl -s "${KEY_API}${tvg_id}")
                 key=$(echo "$key_resp" | jq -r '.keys[0] // empty')
               fi
               
               echo "$extinf_line" >> playlist.m3u
-              prop_added="false"
               
+              # Baki standard properties gulo line e boshay dibe
               for prop in "${props[@]}"; do
-                if [[ "$prop" == *license_key=* ]]; then
-                  echo "#KODIPROP:inputstream.adaptive.license_key=$key" >> playlist.m3u
-                  prop_added="true"
-                else
-                  echo "$prop" >> playlist.m3u
-                fi
+                echo "$prop" >> playlist.m3u
               done
               
-              if [[ "$url" == *.mpd && -n "$key" && "$prop_added" == "false" ]]; then
-                echo "#KODIPROP:inputstream=inputstream.adaptive" >> playlist.m3u
-                echo "#KODIPROP:inputstream.adaptive.manifest_type=mpd" >> playlist.m3u
-                echo "#KODIPROP:inputstream.adaptive.license_type=clearkey" >> playlist.m3u
-                echo "#KODIPROP:inputstream.adaptive.license_key=$key" >> playlist.m3u
+             
+              if [[ "$url" == *.mpd ]]; then
+                if [[ ${#props[@]} -eq 0 ]]; then
+                  echo "#KODIPROP:inputstream=inputstream.adaptive" >> playlist.m3u
+                  echo "#KODIPROP:inputstream.adaptive.manifest_type=mpd" >> playlist.m3u
+                  echo "#KODIPROP:inputstream.adaptive.license_type=clearkey" >> playlist.m3u
+                fi
+                if [[ -n "$key" ]]; then
+                  echo "#KODIPROP:inputstream.adaptive.license_key=$key" >> playlist.m3u
+                fi
               fi
               
               echo "$url" >> playlist.m3u
+              
               
               jq -n -c \
                 --arg name "$tvg_name" \
@@ -86,6 +89,7 @@ jobs:
                 '{name: $name, logo: $logo, title: $title, drmlicense: $drmlicense, useragent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/145.0.0.0 Safari/537.36", referer: "", link: $link}' >> items.json
             fi
           done < raw.m3u
+          
           
           echo "[" > playlist.json
           sed -e '$!s/$/,/' items.json >> playlist.json
@@ -98,5 +102,5 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add playlist.m3u playlist.json
-          git commit -m "Auto-update playlist files" || exit 0
+          git commit -m "Auto-update playlist files with fresh keys" || exit 0
           git push
